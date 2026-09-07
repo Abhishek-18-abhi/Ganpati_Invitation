@@ -3,33 +3,31 @@
 // =========================================================
 
 const bgMusic = document.getElementById("bgMusic");
+const joinButton = document.getElementById("joinBtn");
+let musicStarted = false;
 
-if (bgMusic) {
+function startMusic() {
+    if (!bgMusic || musicStarted) return;
+
     bgMusic.volume = 0.35;
+    bgMusic.play()
+        .then(() => {
+            musicStarted = true;
+            console.log("🎵 Background music started");
+        })
+        .catch(error => {
+            console.warn("Music could not start:", error);
+        });
+}
 
-    let musicStarted = false;
+// A direct user click is the most reliable way to satisfy browser autoplay rules.
+if (joinButton) {
+    joinButton.addEventListener("click", startMusic);
+}
 
-    function startMusic() {
-        if (musicStarted) return;
-
-        bgMusic.play()
-            .then(() => {
-                musicStarted = true;
-                console.log("🎵 Background music started");
-            })
-            .catch((error) => {
-                console.log("Music blocked:", error);
-            });
-    }
-
-    document.addEventListener("pointerdown", startMusic, {
-        once: true,
-        passive: true
-    });
-
-    document.addEventListener("keydown", startMusic, {
-        once: true
-    });
+// Also allow the first tap/click anywhere on the invitation to start music.
+if (bgMusic) {
+    document.addEventListener("pointerdown", startMusic, { passive: true });
 }
 
 
@@ -105,6 +103,7 @@ const heroButton = document.querySelector(".hero .btn");
 
 if (heroButton) {
     heroButton.addEventListener("click", () => {
+        startMusic();
         showToast("🙏 Ganpati Bappa Morya!");
     });
 }
